@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>解体概算ツール</title>
+</head>
+<body>
+
+<h2>解体概算ツール</h2>
+
+<input id="area" placeholder="延床面積㎡"><br>
+<input id="floors" placeholder="階数"><br>
+<input id="hand" placeholder="手解体割合"><br>
+
+<select id="space">
+    <option value="normal">普通</option>
+    <option value="narrow">狭い</option>
+</select>
+
+<button onclick="calc()">概算を出す</button>
+
+<div id="result"></div>
+
+<script>
+function calc() {
+    fetch("/calculate", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            area: document.getElementById("area").value,
+            floors: document.getElementById("floors").value,
+            hand: document.getElementById("hand").value,
+            space: document.getElementById("space").value
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("result").innerHTML =
+            "概算：" + data.price_min + "〜" + data.price_max + "<br>" +
+            "理由：" + data.reasons[0] + "<br>" +
+            "<button onclick='showPaid()'>詳細を見る</button>";
+    });
+}
+
+function showPaid() {
+    alert("ここで有料にする（Stripeなど）");
+}
+</script>
+
+</body>
+</html>
