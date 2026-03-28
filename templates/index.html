@@ -1,24 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-    <title>解体概算ツール</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>解体概算チェック（簡易版）</title>
 </head>
 <body>
 
-<h2>解体概算ツール</h2>
+<h2>解体概算チェック（簡易版）</h2>
+<p>現地確認前の一次判断用の簡易概算ツールです</p>
 
-<input id="area" placeholder="延床面積㎡"><br>
-<input id="floors" placeholder="階数"><br>
-<input id="hand" placeholder="手解体割合"><br>
-
-<select id="space">
-    <option value="normal">普通</option>
-    <option value="narrow">狭い</option>
-</select>
+<input id="area" type="number" placeholder="延床面積㎡"><br><br>
+<input id="year" type="number" placeholder="築年数（年）"><br><br>
 
 <button onclick="calc()">概算を出す</button>
 
-<div id="result"></div>
+<div id="result" style="margin-top:20px;"></div>
 
 <script>
 function calc() {
@@ -27,25 +24,27 @@ function calc() {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
             area: document.getElementById("area").value,
-            floors: document.getElementById("floors").value,
-            hand: document.getElementById("hand").value,
-            space: document.getElementById("space").value
+            year: document.getElementById("year").value
         })
     })
     .then(res => res.json())
     .then(data => {
         document.getElementById("result").innerHTML =
-            "概算：" + data.price_min + "〜" + data.price_max + "<br>" +
-            "理由：" + data.reasons[0] + "<br>" +
-               "※本結果は入力条件から想定した作業条件に基づく概算です<br>" +
-    "（搬出条件・近隣状況等により変動します）<br>" +
-    "手解体割合が極端に高い場合は、上限レンジを超える可能性があります<br><br>" +
-            "<button onclick='showPaid()'>詳細を見る</button>";
+            "概算：" + data.price_min.toLocaleString() + "〜" + data.price_max.toLocaleString() + "円<br><br>" +
+            "【主な要因】<br>" +
+            data.reasons.join("<br>") + "<br><br>" +
+            "<span style='font-size:12px;color:gray;'>" +
+            "※本結果は延床面積と築年数から想定した簡易概算です<br>" +
+            "実際の作業条件・搬出条件により変動します<br>" +
+            "手解体割合が極端に高い場合は上限レンジを超える可能性があります<br>" +
+            "築年数によっては石綿含有建材が使用されている可能性があります" +
+            "</span>";
+    })
+    .catch(error => {
+        document.getElementById("result").innerHTML =
+            "<span style='color:red;'>入力内容を確認してください</span>";
+        console.error(error);
     });
-}
-
-function showPaid() {
-    alert("ここで有料にする（Stripeなど）");
 }
 </script>
 
