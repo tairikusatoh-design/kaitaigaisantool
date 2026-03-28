@@ -23,4 +23,8 @@ def get_reasons(data):
         reasons.append("比較的新しい施工が想定されます")
         reasons.append("材料構成により作業効率が変動する可能性があります")
 
-    return reasons[:3]
+    return {
+    "price_min": int(detail * 0.85),
+    "price_max": int(detail * 1.15),
+    "detail": detail
+}
