@@ -1,12 +1,27 @@
 def calculate_estimate(data):
-    area = float(data.get("area", 0))
-    floors = int(data.get("floors", 1))
+    area = float(data.get("area") or 0)
+    year = int(data.get("year") or 30)
 
     base = area * 14500
-    floor_coef = 1 + (floors - 1) * 0.5
-    
+
+    if year >= 40:
+        coef = 1.1
+    elif year >= 20:
+        coef = 1.05
+    else:
+        coef = 1.0
+
+    detail = int(base * coef)
+
+    return {
+        "min": int(detail * 0.85),
+        "max": int(detail * 1.15),
+        "detail": detail
+    }
+
+
 def get_reasons(data):
-    year = int(data.get("year", 30))
+    year = int(data.get("year") or 30)
 
     reasons = []
 
@@ -23,8 +38,4 @@ def get_reasons(data):
         reasons.append("比較的新しい施工が想定されます")
         reasons.append("材料構成により作業効率が変動する可能性があります")
 
-    return {
-    "price_min": int(detail * 0.85),
-    "price_max": int(detail * 1.15),
-    "detail": detail
-}
+    return reasons[:3]
