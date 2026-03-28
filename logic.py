@@ -4,29 +4,23 @@ def calculate_estimate(data):
 
     base = area * 14500
     floor_coef = 1 + (floors - 1) * 0.5
-
-    detail = int(base * floor_coef)
-
-    return {
-        "min": int(detail * 0.85),
-        "max": int(detail * 1.15),
-        "detail": detail
-    }
-
-
+    
 def get_reasons(data):
+    year = int(data.get("year", 30))
+
     reasons = []
 
-    hand = int(data.get("hand", 0))
-    space = data.get("space", "normal")
+    if year >= 40:
+        reasons.append("築年数が古く、現在と異なる施工方法が使われている可能性があります")
+        reasons.append("材料や下地構成により、解体手間が増える想定です")
+        reasons.append("古い建物特有の構造により、作業効率が低下する可能性があります")
 
-    if hand >= 40:
-        reasons.append("手解体割合が高く、人工作業が増える想定です")
+    elif year >= 20:
+        reasons.append("築年数により使用材料や施工方法に差が出やすい年代です")
+        reasons.append("一部で解体手間が増える可能性があります")
 
-    if space == "narrow":
-        reasons.append("作業スペースが限られ、作業効率が低下する想定です")
-
-    if len(reasons) == 0:
-        reasons.append("一般的な作業条件での想定です")
+    else:
+        reasons.append("比較的新しい施工が想定されます")
+        reasons.append("材料構成により作業効率が変動する可能性があります")
 
     return reasons[:3]
