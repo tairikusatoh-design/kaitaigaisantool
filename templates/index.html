@@ -37,6 +37,9 @@ function calc() {
         document.getElementById("result").innerHTML =
             "概算：" + data.price_min + "〜" + data.price_max + "<br>" +
             "理由：" + data.reasons[0] + "<br>" +
+               "※本結果は入力条件から想定した作業条件に基づく概算です<br>" +
+    "（搬出条件・近隣状況等により変動します）<br>" +
+    "手解体割合が極端に高い場合は、上限レンジを超える可能性があります<br><br>" +
             "<button onclick='showPaid()'>詳細を見る</button>";
     });
 }
