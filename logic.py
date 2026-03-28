@@ -2,7 +2,7 @@ def calculate_estimate(data):
     area = float(data.get("area", 0))
     floors = int(data.get("floors", 1))
 
-    base = area * 10000
+    base = area * 14500
     floor_coef = 1 + (floors - 1) * 0.5
 
     detail = int(base * floor_coef)
