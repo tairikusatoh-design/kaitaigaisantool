@@ -14,10 +14,19 @@ def calculate_estimate(data):
     detail = int(base * coef)
 
     return {
-        "min": int(detail * 0.85),
-        "max": int(detail * 1.15),
-        "detail": detail
-    }
+       if year >= 40:
+    min_rate = 0.75
+    max_rate = 1.25
+else:
+    min_rate = 0.85
+    max_rate = 1.15
+
+return {
+    "min": int(detail * min_rate),
+    "max": int(detail * max_rate),
+    "detail": detail
+}
+    
 
 
 def get_reasons(data):
