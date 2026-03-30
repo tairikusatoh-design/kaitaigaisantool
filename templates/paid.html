@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>解体概算チェック 有料版</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --accent: #1d4ed8;
+      --accent-soft: #eff6ff;
+      --good: #065f46;
+      --warn: #92400e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      line-height: 1.6;
+    }
+    .wrap {
+      width: min(1100px, calc(100% - 24px));
+      margin: 0 auto;
+      padding: 20px 0 40px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #ffffff 0%, #eef4ff 100%);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 18px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.05);
+    }
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: clamp(26px, 4vw, 40px); margin-bottom: 10px; }
+    .sub { color: var(--muted); }
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+    }
+    .section-title {
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .field.full { grid-column: 1 / -1; }
+    label {
+      font-size: 14px;
+      font-weight: 700;
+    }
+    input, select {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 15px;
+      background: #fff;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(29, 78, 216, 0.12);
+    }
+    .range-line {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .range-line input[type="range"] {
+      padding: 0;
+      box-shadow: none;
+    }
+    .hint {
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .result-big {
+      background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+      border: 1px solid #bfdbfe;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+    .result-label {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .result-value {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1.2;
+    }
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .mini {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fff;
+    }
+    .mini .k {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .mini .v {
+      font-size: 22px;
+      font-weight: 800;
+    }
+    .note {
+      margin-top: 14px;
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 14px;
+      padding: 14px;
+      color: var(--warn);
+      font-size: 14px;
+    }
+    .logic {
+      margin-top: 16px;
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+    }
+    .logic ul {
+      margin: 10px 0 0;
+      padding-left: 18px;
+    }
+    .logic li { margin-bottom: 8px; }
+    .price-box {
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 16px;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: var(--good);
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .primary { background: var(--accent); color: white; }
+    .secondary { background: #fff; color: var(--text); border: 1px solid var(--line); }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 640px) {
+      .field-grid, .result-grid { grid-template-columns: 1fr; }
+      .wrap { width: min(100% - 16px, 1100px); }
+      .card, .hero { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div class="badge">買い切り版</div>
+      <h1>解体概算チェック 有料版</h1>
+      <p class="sub">
+        構造・内外装・重機・手解体・作業スペースなどの条件を反映し、
+        現場での概算判断に使いやすい形で金額・人工・日数の目安を確認できるツールです。
+      </p>
+    </div>
+
+    <div class="layout">
+      <div class="card">
+        <h2 class="section-title">入力</h2>
+        <div class="field-grid">
+          <div class="field">
+            <label for="area">延床面積（㎡）</label>
+            <input id="area" type="number" min="10" step="1" value="120" />
+            <div class="hint">分からない場合は建坪×階数の感覚で入力</div>
+          </div>
+
+          <div class="field">
+            <label for="age">築年数</label>
+            <input id="age" type="number" min="0" max="100" step="1" value="35" />
+            <div class="hint">築年数は不確定要素の幅をみる目安として使用します</div>
+          </div>
+
+          <div class="field">
+            <label for="structure">構造</label>
+            <select id="structure">
+              <option value="wood">木造</option>
+              <option value="steel">軽量鉄骨</option>
+              <option value="rc">RC</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="roof">屋根タイプ</label>
+            <select id="roof">
+              <option value="tile">陶器瓦</option>
+              <option value="cement">セメント瓦</option>
+              <option value="slate" selected>スレート</option>
+              <option value="metal">金属</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="wall">外壁タイプ</label>
+            <select id="wall">
+              <option value="siding" selected>窯業系サイディング</option>
+              <option value="wood">木壁（板張り等）</option>
+              <option value="mortar">モルタル</option>
+              <option value="metal">金属系</option>
+              <option value="alc">ALC</option>
+              <option value="tile">タイル</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="interior">内装タイプ</label>
+            <select id="interior">
+              <option value="gypsum" selected>石膏系</option>
+              <option value="wood">木質</option>
+              <option value="mud">土壁</option>
+              <option value="plaster">塗り壁</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="machine">重機サイズ</label>
+            <select id="machine">
+              <option value="mini">ミニ</option>
+              <option value="02">0.2</option>
+              <option value="025" selected>0.25</option>
+              <option value="045">0.45</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="space">作業スペース</label>
+            <select id="space">
+              <option value="narrow">狭小</option>
+              <option value="normal" selected>普通</option>
+              <option value="wide">広い</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="workers">人数</label>
+            <input id="workers" type="number" min="1" max="20" step="1" value="3" />
+            <div class="hint">作業日数の計算に使用</div>
+          </div>
+
+          <div class="field full">
+            <label for="handRatio">手解体割合</label>
+            <div class="range-line">
+              <input id="handRatio" type="range" min="0" max="80" step="5" value="25" />
+              <strong id="handRatioValue">25%</strong>
+            </div>
+            <div class="hint">重機が入れない部分や細かい手壊しの割合</div>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <button class="secondary" id="resetBtn">初期値に戻す</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 class="section-title">概算結果</h2>
+
+        <div class="result-big">
+          <div class="result-label">概算金額レンジ</div>
+          <div class="result-value" id="priceRange">¥3,000,000〜¥3,500,000</div>
+        </div>
+
+        <div class="result-grid">
+          <div class="mini">
+            <div class="k">目安人工</div>
+            <div class="v" id="totalLabor">約31人工</div>
+            <div class="hint" id="laborRiskText" style="margin-top:6px;">現場条件により34人工程度になる可能性があります</div>
+          </div>
+          <div class="mini">
+            <div class="k">目安日数</div>
+            <div class="v" id="days">約10日</div>
+            <div class="hint" id="dayRiskText" style="margin-top:6px;">現場条件により11〜12日程度になる可能性があります</div>
+          </div>
+          <div class="mini">
+            <div class="k">推定総重量</div>
+            <div class="v" id="buildingWeight">27.6t</div>
+          </div>
+        </div>
+
+        <div class="logic">
+          <h3>今回の判断理由</h3>
+          <ul id="reasons"></ul>
+        </div>
+
+        <div class="logic">
+          <h3>人工が増えやすい条件</h3>
+          <ul id="riskFactors"></ul>
+        </div>
+
+        <div class="price-box">
+          <strong>このツールで確認できること</strong><br>
+          概算金額レンジ、必要人工、作業日数、現場条件による増減要因を
+          その場でまとめて確認できます。
+        </div>
+
+        <div class="note">
+          <strong>注意</strong><br>
+          ※本ツールは建物本体の解体概算です。外構・樹木・残置物・土間・浄化槽等の付帯工事は含まれていません。<br>
+          ※作業員の構成や現場条件、天候などにより人工・日数は変動する可能性があります。<br>
+          ※内装の施工状況により、想定以上に人工がかかる場合があります。特に、壁を軽く叩いた際に音が鈍い・通常と異なる場合、下地やボードが二重になっている可能性があります。見積時の備考や契約時に、想定外の構造が確認された場合の対応を明記しておくことを推奨します。<br>
+          ※本結果は概算判断用です。最終見積を確定するものではありません。<br>
+          ※石綿・外構・特殊条件には対応していません。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const el = (id) => document.getElementById(id);
+
+    const cfg = {
+      laborUnit: 20000,
+      overheadRate: 0.10,
+      profitRate: 0.15,
+      roofAreaFactor: 0.65,
+      wallAreaFactor: 1.1,
+      wasteRatio: 0.9,
+      baseRange: 0.12,
+      structures: {
+        wood: { name: '木造', labor: 1.00, weight: 160 },
+        steel: { name: '軽量鉄骨', labor: 1.18, weight: 290 },
+        rc: { name: 'RC', labor: 1.45, weight: 410 }
+      },
+      roof: {
+        tile: { name: '陶器瓦', efficiency: 18, weight: 35 },
+        cement: { name: 'セメント瓦', efficiency: 20, weight: 28 },
+        slate: { name: 'スレート', efficiency: 22, weight: 18 },
+        metal: { name: '金属', efficiency: 25, weight: 10 }
+      },
+      wall: {
+        siding: { name: '窯業系サイディング', efficiency: 17, weight: 22, handAdjust: 0.00 },
+        wood: { name: '木壁', efficiency: 22, weight: 18, handAdjust: -0.10 },
+        mortar: { name: 'モルタル', efficiency: 12, weight: 30, handAdjust: 0.00 },
+        metal: { name: '金属系', efficiency: 19, weight: 12, handAdjust: 0.00 },
+        alc: { name: 'ALC', efficiency: 14, weight: 32, handAdjust: 0.00 },
+        tile: { name: 'タイル', efficiency: 10, weight: 38, handAdjust: 0.00 }
+      },
+      interior: {
+        gypsum: { name: '石膏系', efficiency: 13, weight: 28 },
+        wood: { name: '木質', efficiency: 16, weight: 20 },
+        mud: { name: '土壁', efficiency: 11, weight: 34 },
+        plaster: { name: '塗り壁', efficiency: 10, weight: 30 }
+      },
+      machine: {
+        mini: { name: 'ミニ', factor: 1.10, daily: 18000 },
+        '02': { name: '0.2', factor: 1.00, daily: 22000 },
+        '025': { name: '0.25', factor: 0.94, daily: 26000 },
+        '045': { name: '0.45', factor: 0.84, daily: 34000 }
+      },
+      space: {
+        narrow: { name: '狭小', factor: 1.18, rangeAdd: 0.05 },
+        normal: { name: '普通', factor: 1.00, rangeAdd: 0.00 },
+        wide: { name: '広い', factor: 0.92, rangeAdd: -0.01 }
+      }
+    };
+
+    const defaults = {
+      area: 120,
+      age: 35,
+      structure: 'wood',
+      roof: 'slate',
+      wall: 'siding',
+      interior: 'gypsum',
+      machine: '025',
+      space: 'normal',
+      workers: 3,
+      handRatio: 25
+    };
+
+    function yen(n) {
+      return '¥' + Math.round(n).toLocaleString('ja-JP');
+    }
+
+    function formatTon(kg) {
+      return (kg / 1000).toFixed(1) + 't';
+    }
+
+    function calc() {
+      const area = Math.max(10, Number(el('area').value) || 0);
+      const age = Math.max(0, Number(el('age').value) || 0);
+      const structure = cfg.structures[el('structure').value];
+      const roof = cfg.roof[el('roof').value];
+      const wall = cfg.wall[el('wall').value];
+      const interior = cfg.interior[el('interior').value];
+      const machine = cfg.machine[el('machine').value];
+      const space = cfg.space[el('space').value];
+      const workers = Math.max(1, Number(el('workers').value) || 1);
+      const handRatio = Number(el('handRatio').value) || 0;
+
+      el('handRatioValue').textContent = handRatio + '%';
+
+      const roofArea = area * cfg.roofAreaFactor;
+      const wallArea = area * cfg.wallAreaFactor;
+      const interiorArea = area;
+
+      const roofLabor = roofArea / roof.efficiency;
+      const wallLabor = wallArea / wall.efficiency;
+      const interiorLabor = interiorArea / interior.efficiency;
+
+      let totalLabor = (roofLabor + wallLabor + interiorLabor) * structure.labor;
+      totalLabor *= machine.factor;
+      totalLabor *= space.factor;
+      const wallHandAdjust = typeof wall.handAdjust === 'number' ? wall.handAdjust : 0;
+      const handFactor = Math.max(0.85, 1 + (handRatio / 100) * (0.65 + wallHandAdjust));
+      totalLabor *= handFactor;
+
+      const days = totalLabor / workers;
+
+      const buildingWeight = area * structure.weight;
+      const roofWeight = roofArea * roof.weight;
+      const wallWeight = wallArea * wall.weight;
+      const interiorWeight = interiorArea * interior.weight;
+      const wasteWeight = (buildingWeight + roofWeight + wallWeight + interiorWeight) * cfg.wasteRatio;
+
+      const laborCost = totalLabor * cfg.laborUnit;
+      const machineCost = days * machine.daily;
+      const disposalCost = (wasteWeight / 1000) * 18000;
+      const directCost = laborCost + machineCost + disposalCost;
+      const totalCost = directCost * (1 + cfg.overheadRate) * (1 + cfg.profitRate);
+
+      let rangeRate = cfg.baseRange;
+      rangeRate += (handRatio / 100) * 0.10;
+      rangeRate += space.rangeAdd;
+      rangeRate += age >= 40 ? 0.03 : age >= 25 ? 0.015 : 0;
+
+      const low = totalCost * (1 - rangeRate);
+      const high = totalCost * (1 + rangeRate);
+
+      el('priceRange').textContent = `${yen(low)}〜${yen(high)}`;
+
+      const riskExtraRate = 0.04 + (handRatio / 100) * 0.14 + (space.name === '狭小' ? 0.06 : space.name === '普通' ? 0.02 : 0.00);
+      const upperLabor = Math.ceil(totalLabor * (1 + riskExtraRate));
+      const baseDays = Math.max(1, Math.round(days));
+      const upperDaysLow = Math.max(baseDays, Math.floor(days * (1 + riskExtraRate * 0.7)));
+      const upperDaysHigh = Math.max(upperDaysLow, Math.ceil(days * (1 + riskExtraRate)));
+
+      el('totalLabor').textContent = '約' + Math.round(totalLabor) + '人工';
+      el('days').textContent = '約' + baseDays + '日';
+      el('laborRiskText').textContent = `現場条件により${upperLabor}人工程度になる可能性があります`;
+      el('dayRiskText').textContent = upperDaysLow === upperDaysHigh
+        ? `現場条件により${upperDaysHigh}日程度になる可能性があります`
+        : `現場条件により${upperDaysLow}〜${upperDaysHigh}日程度になる可能性があります`;
+      el('buildingWeight').textContent = formatTon(buildingWeight + roofWeight + wallWeight + interiorWeight);
+
+      const reasons = [];
+      reasons.push(`${structure.name}のため、人工係数と重量が上がります。`);
+      reasons.push(`${roof.name}・${wall.name}・${interior.name}を前提に能率を反映しています。`);
+      reasons.push(`重機は${machine.name}を前提に補正しています。`);
+      reasons.push(`手解体割合${handRatio}%を反映しています。`);
+      if (wall.name.includes('木壁')) reasons.push('木壁は手壊ししやすい前提で、手解体補正をやや弱めています。');
+      reasons.push(`作業スペースは${space.name}想定です。`);
+      if (age >= 40) reasons.push('築年数が高めのため、不確定要素を考慮してレンジを広めにしています。');
+      else if (age >= 25) reasons.push('築年数を考慮してレンジを少し広げています。');
+
+      const riskFactors = [];
+      if (handRatio >= 40) {
+        riskFactors.push(wall.name.includes('木壁')
+          ? '手解体割合は高めですが、木壁のため手壊し負荷はやや軽めに見ています。'
+          : '手解体割合が高いため、人工が大きく上振れしやすい条件です。');
+      } else if (handRatio >= 20) {
+        riskFactors.push(wall.name.includes('木壁')
+          ? '手解体割合を反映していますが、木壁のため手壊し負荷はやや軽めに見ています。'
+          : '手解体割合の影響により、人工が増えやすい条件です。');
+      }
+      if (space.name === '狭小') {
+        riskFactors.push('狭小現場のため、作業効率が落ちて人工・日数が増えやすい条件です。');
+      }
+      if (structure.name === 'RC') {
+        riskFactors.push('RCは重量と解体負荷が大きく、人工が増えやすい条件です。');
+      } else if (structure.name === '軽量鉄骨') {
+        riskFactors.push('軽量鉄骨は木造より手間が増えやすい条件です。');
+      }
+      riskFactors.push('内装の施工状況によっては、想定以上に人工がかかる場合があります。');
+
+      el('reasons').innerHTML = reasons.map(r => `<li>${r}</li>`).join('');
+      el('riskFactors').innerHTML = riskFactors.map(r => `<li>${r}</li>`).join('');
+    }
+
+    function applyValues(values) {
+      Object.entries(values).forEach(([key, value]) => {
+        const node = el(key);
+        if (node) node.value = value;
+      });
+      calc();
+    }
+
+    ['area', 'age', 'structure', 'roof', 'wall', 'interior', 'machine', 'space', 'workers', 'handRatio'].forEach(id => {
+      el(id).addEventListener('input', calc);
+      el(id).addEventListener('change', calc);
+    });
+
+    el('resetBtn').addEventListener('click', () => {
+      applyValues(defaults);
+    });
+
+    applyValues(defaults);
+  </script>
+</body>
+</html>
