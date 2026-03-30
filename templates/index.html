@@ -17,7 +17,7 @@
 
 <div id="result" style="margin-top:20px;"></div>
 
-    <div id="paidBtnWrap" style="display:none; margin-top:20px; text-align:center;">
+<div id="paidBtnWrap" style="display:none; margin-top:20px; text-align:center;">
   <a href="/paid" style="
     display:inline-block;
     background:#2563eb;
@@ -34,6 +34,7 @@
     構造・内外装・重機条件まで反映した詳細版です
   </p>
 </div>
+
 <script>
 function calc() {
     fetch("/calculate", {
@@ -47,9 +48,6 @@ function calc() {
     .then(res => res.json())
     .then(data => {
         document.getElementById("result").innerHTML =
-            
-    document.getElementById("paidBtnWrap").style.display = "block";
-})
             "概算：" + data.price_min.toLocaleString() + "〜" + data.price_max.toLocaleString() + "円<br><br>" +
             "【主な要因】<br>" +
             data.reasons.join("<br>") + "<br><br>" +
@@ -58,9 +56,11 @@ function calc() {
             "実際の作業条件・搬出条件により変動します<br>" +
             "手解体割合が極端に高い場合は上限レンジを超える可能性があります<br>" +
             "築年数によっては石綿含有建材が使用されている可能性があります<br>" +
-            "※※石綿（アスベスト）含有建材がある場合は対象外です<br>" +
+            "※石綿（アスベスト）含有建材がある場合は対象外です<br>" +
             "※実際の費用は地域や処分場により大きく変動します" +
             "</span>";
+
+        document.getElementById("paidBtnWrap").style.display = "block";
     })
     .catch(error => {
         document.getElementById("result").innerHTML =
