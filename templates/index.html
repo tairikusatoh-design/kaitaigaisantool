@@ -17,7 +17,7 @@
 
 <div id="result" style="margin-top:20px;"></div>
 
-    <div style="margin-top:20px; text-align:center;">
+    <div id="paidBtnWrap" style="display:none; margin-top:20px; text-align:center;">
   <a href="/paid" style="
     display:inline-block;
     background:#2563eb;
@@ -47,6 +47,9 @@ function calc() {
     .then(res => res.json())
     .then(data => {
         document.getElementById("result").innerHTML =
+            
+    document.getElementById("paidBtnWrap").style.display = "block";
+})
             "概算：" + data.price_min.toLocaleString() + "〜" + data.price_max.toLocaleString() + "円<br><br>" +
             "【主な要因】<br>" +
             data.reasons.join("<br>") + "<br><br>" +
