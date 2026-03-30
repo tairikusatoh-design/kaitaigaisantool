@@ -2,7 +2,7 @@ def calculate_estimate(data):
     area = float(data.get("area") or 0)
     year = int(data.get("year") or 30)
 
-    base = area * 14500
+    base = area * 13000
     detail = int(base)
 
     if year >= 40:
