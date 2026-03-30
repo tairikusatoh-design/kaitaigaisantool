@@ -6,7 +6,11 @@ app = Flask(__name__)
 @app.route("/")
 def index():
     return render_template("index.html")
-
+    
+@app.route("/paid")
+def paid():
+    return render_template("paid.html")
+    
 @app.route("/calculate", methods=["POST"])
 def calculate():
     data = request.json
