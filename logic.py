@@ -7,13 +7,13 @@ def calculate_estimate(data):
 
     if year >= 40:
         min_rate = 0.7
-        max_rate = 1.25
+        max_rate = 1.3
     elif year >= 20:
         min_rate = 0.75
-        max_rate = 1.2
+        max_rate = 1.25
     else:
         min_rate = 0.8
-        max_rate = 1.15
+        max_rate = 1.2
 
     return {
         "min": int(detail * min_rate),
